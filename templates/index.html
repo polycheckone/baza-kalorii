@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baza Kalorii</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        select {
+            cursor: pointer;
+            background: white;
+        }
+
+        optgroup {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        option {
+            font-weight: normal;
+            color: #333;
+        }
+
+        .add-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .add-row .form-group:first-child {
+            flex: 3;
+        }
+
+        .add-row .form-group:nth-child(2) {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: #ff4757;
+            color: white;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        .btn-danger:hover {
+            background: #ff3344;
+        }
+
+        .btn-clear {
+            background: #f0f0f0;
+            color: #666;
+            margin-left: 10px;
+        }
+
+        .btn-clear:hover {
+            background: #e0e0e0;
+        }
+
+        /* Lista składników */
+        .ingredients-list {
+            margin-top: 20px;
+        }
+
+        .ingredient-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .ingredient-name {
+            flex: 2;
+            font-weight: 500;
+        }
+
+        .ingredient-amount {
+            flex: 1;
+            color: #666;
+            text-align: center;
+        }
+
+        .ingredient-calories {
+            flex: 1;
+            text-align: right;
+            font-weight: 600;
+            color: #667eea;
+            margin-right: 15px;
+        }
+
+        .empty-list {
+            text-align: center;
+            color: #999;
+            padding: 30px;
+            font-style: italic;
+        }
+
+        /* Panel podsumowania */
+        .summary-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            color: white;
+            display: none;
+        }
+
+        .summary-panel.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .summary-title {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .summary-item {
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            display: block;
+        }
+
+        .summary-label {
+            font-size: 0.85em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        /* Pasek makro */
+        .macro-bar {
+            margin-top: 20px;
+            height: 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .macro-bar-protein { background: #4CAF50; transition: width 0.3s; }
+        .macro-bar-carbs { background: #FF9800; transition: width 0.3s; }
+        .macro-bar-fat { background: #f44336; transition: width 0.3s; }
+
+        .macro-legend {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 12px;
+            font-size: 0.85em;
+        }
+
+        .macro-legend span::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        .macro-legend .protein::before { background: #4CAF50; }
+        .macro-legend .carbs::before { background: #FF9800; }
+        .macro-legend .fat::before { background: #f44336; }
+
+        /* Zapotrzebowanie kaloryczne */
+        .calorie-goal-card {
+            padding: 20px 30px;
+        }
+
+        .goal-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .goal-row label {
+            margin: 0;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .goal-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .goal-input-wrapper input {
+            width: 100px;
+            text-align: center;
+            padding: 8px 12px;
+        }
+
+        .goal-unit {
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Pasek postępu zapotrzebowania */
+        .goal-progress-container {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .goal-progress-bar {
+            height: 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .goal-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 50%, #FFEB3B 75%, #FF9800 90%, #f44336 100%);
+            background-size: 500% 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .goal-progress-text {
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .goal-progress-text #goal-percent {
+            font-weight: 700;
+            font-size: 1.3em;
+        }
+
+        /* Responsive */
+        @media (max-width: 500px) {
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .add-row {
+                flex-wrap: wrap;
+            }
+            .add-row .form-group {
+                flex: 1 1 100% !important;
+            }
+            .btn-primary {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Baza Kalorii</h1>
+
+        <!-- Dodawanie składników -->
+        <div class="card">
+            <div class="card-title">Dodaj składnik do dania</div>
+            <div class="add-row">
+                <div class="form-group">
+                    <label for="produkt">Produkt</label>
+                    <select id="produkt">
+                        <option value="">-- wybierz produkt --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="gramy">Ilość (g)</label>
+                    <input type="number" id="gramy" value="100" min="1" max="10000">
+                </div>
+                <button class="btn btn-primary" id="btn-add">Dodaj</button>
+            </div>
+        </div>
+
+        <!-- Lista składników -->
+        <div class="card">
+            <div class="card-title">
+                Twoje danie
+                <button class="btn btn-clear" id="btn-clear" style="float: right; margin-top: -5px;">Wyczyść</button>
+            </div>
+            <div class="ingredients-list" id="ingredients-list">
+                <div class="empty-list">Dodaj składniki, aby skomponować danie</div>
+            </div>
+        </div>
+
+        <!-- Zapotrzebowanie kaloryczne -->
+        <div class="card calorie-goal-card">
+            <div class="goal-row">
+                <label for="calorie-goal">Dzienne zapotrzebowanie:</label>
+                <div class="goal-input-wrapper">
+                    <input type="number" id="calorie-goal" value="2000" min="1000" max="10000">
+                    <span class="goal-unit">kcal</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Podsumowanie -->
+        <div class="card">
+            <div class="summary-panel" id="summary-panel">
+                <div class="summary-title">Podsumowanie wartości odżywczych</div>
+
+                <!-- Procent zapotrzebowania -->
+                <div class="goal-progress-container">
+                    <div class="goal-progress-bar">
+                        <div class="goal-progress-fill" id="goal-progress-fill"></div>
+                    </div>
+                    <div class="goal-progress-text">
+                        <span id="goal-percent">0%</span> dziennego zapotrzebowania
+                    </div>
+                </div>
+
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <span class="summary-value" id="total-calories">0</span>
+                        <span class="summary-label">kcal</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-value" id="total-protein">0g</span>
+                        <span class="summary-label">Białko</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-value" id="total-carbs">0g</span>
+                        <span class="summary-label">Węglowodany</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-value" id="total-fat">0g</span>
+                        <span class="summary-label">Tłuszcze</span>
+                    </div>
+                </div>
+                <div class="macro-bar">
+                    <div class="macro-bar-protein" id="bar-protein"></div>
+                    <div class="macro-bar-carbs" id="bar-carbs"></div>
+                    <div class="macro-bar-fat" id="bar-fat"></div>
+                </div>
+                <div class="macro-legend">
+                    <span class="protein">Białko</span>
+                    <span class="carbs">Węglowodany</span>
+                    <span class="fat">Tłuszcze</span>
+                </div>
+            </div>
+            <div class="empty-list" id="empty-summary">Podsumowanie pojawi się po dodaniu składników</div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const produktSelect = document.getElementById('produkt');
+            const gramyInput = document.getElementById('gramy');
+            const btnAdd = document.getElementById('btn-add');
+            const btnClear = document.getElementById('btn-clear');
+            const ingredientsList = document.getElementById('ingredients-list');
+            const summaryPanel = document.getElementById('summary-panel');
+            const emptySummary = document.getElementById('empty-summary');
+            const calorieGoalInput = document.getElementById('calorie-goal');
+
+            // Przechowywanie produktów i składników dania
+            let produktyData = {};
+            let danie = [];
+
+            // Załaduj produkty przy starcie
+            async function loadProdukty() {
+                try {
+                    const response = await fetch('/api/produkty');
+                    const kategorie = await response.json();
+
+                    const sortedKategorie = Object.keys(kategorie).sort();
+
+                    for (const kategoria of sortedKategorie) {
+                        const optgroup = document.createElement('optgroup');
+                        optgroup.label = kategoria.charAt(0).toUpperCase() + kategoria.slice(1);
+
+                        for (const produkt of kategorie[kategoria]) {
+                            const option = document.createElement('option');
+                            option.value = produkt.id;
+                            option.textContent = produkt.nazwa;
+                            optgroup.appendChild(option);
+
+                            // Zapisz dane produktu
+                            produktyData[produkt.id] = produkt;
+                        }
+
+                        produktSelect.appendChild(optgroup);
+                    }
+                } catch (error) {
+                    console.error('Błąd ładowania produktów:', error);
+                }
+            }
+
+            // Dodaj składnik do dania
+            function addIngredient() {
+                const produktId = produktSelect.value;
+                const gramy = parseFloat(gramyInput.value) || 100;
+
+                if (!produktId) {
+                    alert('Wybierz produkt!');
+                    return;
+                }
+
+                const produkt = produktyData[produktId];
+                const mnoznik = gramy / 100;
+
+                danie.push({
+                    id: produktId,
+                    nazwa: produkt.nazwa,
+                    gramy: gramy,
+                    kalorie: produkt.kalorie * mnoznik,
+                    bialko: produkt.bialko * mnoznik,
+                    weglowodany: produkt.weglowodany * mnoznik,
+                    tluszcze: produkt.tluszcze * mnoznik
+                });
+
+                // Reset formularza
+                produktSelect.value = '';
+                gramyInput.value = 100;
+
+                renderDanie();
+            }
+
+            // Usuń składnik
+            function removeIngredient(index) {
+                danie.splice(index, 1);
+                renderDanie();
+            }
+
+            // Wyczyść całe danie
+            function clearDanie() {
+                danie = [];
+                renderDanie();
+            }
+
+            // Renderuj listę składników i podsumowanie
+            function renderDanie() {
+                // Renderuj listę
+                if (danie.length === 0) {
+                    ingredientsList.innerHTML = '<div class="empty-list">Dodaj składniki, aby skomponować danie</div>';
+                    summaryPanel.classList.remove('visible');
+                    emptySummary.style.display = 'block';
+                    return;
+                }
+
+                let html = '';
+                let totalKcal = 0, totalB = 0, totalW = 0, totalT = 0;
+
+                danie.forEach((item, index) => {
+                    html += '<div class="ingredient-item">' +
+                        '<span class="ingredient-name">' + item.nazwa + '</span>' +
+                        '<span class="ingredient-amount">' + item.gramy + 'g</span>' +
+                        '<span class="ingredient-calories">' + Math.round(item.kalorie) + ' kcal</span>' +
+                        '<button class="btn btn-danger" onclick="window.removeIngredient(' + index + ')">✕</button>' +
+                    '</div>';
+
+                    totalKcal += item.kalorie;
+                    totalB += item.bialko;
+                    totalW += item.weglowodany;
+                    totalT += item.tluszcze;
+                });
+
+                ingredientsList.innerHTML = html;
+
+                // Aktualizuj podsumowanie
+                document.getElementById('total-calories').textContent = Math.round(totalKcal);
+                document.getElementById('total-protein').textContent = totalB.toFixed(1) + 'g';
+                document.getElementById('total-carbs').textContent = totalW.toFixed(1) + 'g';
+                document.getElementById('total-fat').textContent = totalT.toFixed(1) + 'g';
+
+                // Pasek proporcji makro
+                const totalMacro = totalB + totalW + totalT;
+                if (totalMacro > 0) {
+                    document.getElementById('bar-protein').style.width = (totalB / totalMacro * 100) + '%';
+                    document.getElementById('bar-carbs').style.width = (totalW / totalMacro * 100) + '%';
+                    document.getElementById('bar-fat').style.width = (totalT / totalMacro * 100) + '%';
+                }
+
+                // Procent dziennego zapotrzebowania
+                const calorieGoal = parseFloat(calorieGoalInput.value) || 2000;
+                const percent = Math.round((totalKcal / calorieGoal) * 100);
+                document.getElementById('goal-percent').textContent = percent + '%';
+                document.getElementById('goal-progress-fill').style.width = Math.min(percent, 100) + '%';
+
+                summaryPanel.classList.add('visible');
+                emptySummary.style.display = 'none';
+            }
+
+            // Expose removeIngredient globally
+            window.removeIngredient = removeIngredient;
+
+            // Event listeners
+            btnAdd.addEventListener('click', addIngredient);
+            btnClear.addEventListener('click', clearDanie);
+
+            // Enter key to add
+            gramyInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addIngredient();
+            });
+
+            // Aktualizuj przy zmianie zapotrzebowania
+            calorieGoalInput.addEventListener('input', renderDanie);
+
+            // Załaduj produkty
+            loadProdukty();
+        });
+    </script>
+</body>
+</html>
