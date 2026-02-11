@@ -1,4 +1,7 @@
 __pycache__/
 *.pyc
 .claude/
-nul
+*.zip
+venv/
+.venv/
+.env

@@ -5,6 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Baza Kalorii</title>
     <style>
+        :root {
+            --bg-gradient-1: #667eea;
+            --bg-gradient-2: #764ba2;
+            --card-bg: white;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --text-muted: #999;
+            --border-color: #e0e0e0;
+            --border-light: #f0f0f0;
+            --item-bg: #f8f9fa;
+            --input-bg: white;
+            --accent-color: #667eea;
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-1: #1a1a2e;
+            --bg-gradient-2: #16213e;
+            --card-bg: #1f1f1f;
+            --text-primary: #e0e0e0;
+            --text-secondary: #aaa;
+            --text-muted: #777;
+            --border-color: #444;
+            --border-light: #333;
+            --item-bg: #2a2a2a;
+            --input-bg: #2a2a2a;
+            --accent-color: #8b9cff;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -13,9 +41,10 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 100%);
             min-height: 100vh;
             padding: 40px 20px;
+            transition: background 0.3s;
         }
 
         .container {
@@ -31,21 +60,81 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
-        .card {
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin-bottom: 0;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
             background: white;
+            color: #667eea;
+        }
+
+        .visit-counter {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-theme {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-theme:hover {
+            background: white;
+            color: var(--bg-gradient-1);
+        }
+
+        .card {
+            background: var(--card-bg);
             border-radius: 20px;
             padding: 30px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             margin-bottom: 20px;
+            transition: background 0.3s;
         }
 
         .card-title {
             font-size: 1.2em;
             font-weight: 600;
-            color: #333;
+            color: var(--text-primary);
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 2px solid var(--border-light);
         }
 
         .form-group {
@@ -56,36 +145,39 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-primary);
         }
 
         select, input {
             width: 100%;
             padding: 12px 15px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border-color);
             border-radius: 10px;
             font-size: 16px;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s, background 0.3s;
+            background: var(--input-bg);
+            color: var(--text-primary);
         }
 
         select:focus, input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--accent-color);
         }
 
         select {
             cursor: pointer;
-            background: white;
+            background: var(--input-bg);
         }
 
         optgroup {
             font-weight: bold;
-            color: #667eea;
+            color: var(--accent-color);
         }
 
         option {
             font-weight: normal;
-            color: #333;
+            color: var(--text-primary);
+            background: var(--input-bg);
         }
 
         .add-row {
@@ -114,7 +206,7 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 100%);
             color: white;
         }
 
@@ -135,13 +227,13 @@
         }
 
         .btn-clear {
-            background: #f0f0f0;
-            color: #666;
+            background: var(--border-light);
+            color: var(--text-secondary);
             margin-left: 10px;
         }
 
         .btn-clear:hover {
-            background: #e0e0e0;
+            background: var(--border-color);
         }
 
         /* Lista składników */
@@ -153,10 +245,11 @@
             display: flex;
             align-items: center;
             padding: 12px 15px;
-            background: #f8f9fa;
+            background: var(--item-bg);
             border-radius: 10px;
             margin-bottom: 10px;
             animation: slideIn 0.3s ease;
+            transition: background 0.3s;
         }
 
         @keyframes slideIn {
@@ -167,11 +260,12 @@
         .ingredient-name {
             flex: 2;
             font-weight: 500;
+            color: var(--text-primary);
         }
 
         .ingredient-amount {
             flex: 1;
-            color: #666;
+            color: var(--text-secondary);
             text-align: center;
         }
 
@@ -179,20 +273,20 @@
             flex: 1;
             text-align: right;
             font-weight: 600;
-            color: #667eea;
+            color: var(--accent-color);
             margin-right: 15px;
         }
 
         .empty-list {
             text-align: center;
-            color: #999;
+            color: var(--text-muted);
             padding: 30px;
             font-style: italic;
         }
 
         /* Panel podsumowania */
         .summary-panel {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 100%);
             border-radius: 15px;
             padding: 25px;
             color: white;
@@ -291,7 +385,7 @@
         .goal-row label {
             margin: 0;
             font-weight: 600;
-            color: #333;
+            color: var(--text-primary);
         }
 
         .goal-input-wrapper {
@@ -307,7 +401,7 @@
         }
 
         .goal-unit {
-            color: #666;
+            color: var(--text-secondary);
             font-weight: 500;
         }
 
@@ -345,6 +439,67 @@
             font-size: 1.3em;
         }
 
+        /* Autocomplete */
+        .autocomplete-wrapper {
+            position: relative;
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .autocomplete-dropdown.visible {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: background 0.2s;
+        }
+
+        .autocomplete-item:hover,
+        .autocomplete-item.selected {
+            background: var(--item-bg);
+        }
+
+        .autocomplete-item .product-name {
+            font-weight: 500;
+        }
+
+        .autocomplete-item .product-info {
+            font-size: 0.85em;
+            color: var(--text-muted);
+        }
+
+        .autocomplete-category {
+            padding: 8px 15px;
+            font-weight: 600;
+            color: var(--accent-color);
+            background: var(--border-light);
+            font-size: 0.85em;
+            text-transform: uppercase;
+        }
+
+        .autocomplete-no-results {
+            padding: 15px;
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
         /* Responsive */
         @media (max-width: 500px) {
             .summary-grid {
@@ -365,7 +520,31 @@
 </head>
 <body>
     <div class="container">
-        <h1>Baza Kalorii</h1>
+        <div class="header">
+            <h1>Baza Kalorii</h1>
+            <div class="header-buttons">
+                {% if not jest_gosciem %}
+                <span class="visit-counter" title="Licznik odwiedzin">{{ odwiedziny }}</span>
+                {% endif %}
+                <button class="btn-theme" id="btn-theme" title="Zmien motyw">🌙</button>
+                {% if jest_gosciem %}
+                <a href="/logout" class="btn-logout">Zaloguj sie</a>
+                {% else %}
+                <a href="/logout" class="btn-logout">Wyloguj ({{ uzytkownik }})</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Zapotrzebowanie kaloryczne -->
+        <div class="card calorie-goal-card">
+            <div class="goal-row">
+                <label for="calorie-goal">Dzienne zapotrzebowanie:</label>
+                <div class="goal-input-wrapper">
+                    <input type="number" id="calorie-goal" value="2000" min="1000" max="10000">
+                    <span class="goal-unit">kcal</span>
+                </div>
+            </div>
+        </div>
 
         <!-- Dodawanie składników -->
         <div class="card">
@@ -373,13 +552,14 @@
             <div class="add-row">
                 <div class="form-group">
                     <label for="produkt">Produkt</label>
-                    <select id="produkt">
-                        <option value="">-- wybierz produkt --</option>
-                    </select>
+                    <div class="autocomplete-wrapper">
+                        <input type="text" id="produkt" placeholder="Wpisz nazwę produktu..." autocomplete="off">
+                        <div class="autocomplete-dropdown" id="autocomplete-dropdown"></div>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="gramy">Ilość (g)</label>
-                    <input type="number" id="gramy" value="100" min="1" max="10000">
+                    <label for="ilosc" id="ilosc-label">Ilość (g)</label>
+                    <input type="number" id="ilosc" value="100" min="1" max="10000">
                 </div>
                 <button class="btn btn-primary" id="btn-add">Dodaj</button>
             </div>
@@ -393,17 +573,6 @@
             </div>
             <div class="ingredients-list" id="ingredients-list">
                 <div class="empty-list">Dodaj składniki, aby skomponować danie</div>
-            </div>
-        </div>
-
-        <!-- Zapotrzebowanie kaloryczne -->
-        <div class="card calorie-goal-card">
-            <div class="goal-row">
-                <label for="calorie-goal">Dzienne zapotrzebowanie:</label>
-                <div class="goal-input-wrapper">
-                    <input type="number" id="calorie-goal" value="2000" min="1000" max="10000">
-                    <span class="goal-unit">kcal</span>
-                </div>
             </div>
         </div>
 
@@ -456,9 +625,41 @@
     </div>
 
     <script>
+        // Obsługa motywu - uruchom przed DOMContentLoaded żeby uniknąć migotania
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+
         document.addEventListener('DOMContentLoaded', function() {
-            const produktSelect = document.getElementById('produkt');
-            const gramyInput = document.getElementById('gramy');
+            // Przełącznik motywu
+            const btnTheme = document.getElementById('btn-theme');
+
+            function updateThemeButton() {
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                btnTheme.textContent = isDark ? '☀️' : '🌙';
+            }
+
+            btnTheme.addEventListener('click', function() {
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                if (isDark) {
+                    document.documentElement.removeAttribute('data-theme');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+                updateThemeButton();
+            });
+
+            updateThemeButton();
+
+            const produktInput = document.getElementById('produkt');
+            const autocompleteDropdown = document.getElementById('autocomplete-dropdown');
+            const iloscInput = document.getElementById('ilosc');
+            const iloscLabel = document.getElementById('ilosc-label');
             const btnAdd = document.getElementById('btn-add');
             const btnClear = document.getElementById('btn-clear');
             const ingredientsList = document.getElementById('ingredients-list');
@@ -468,7 +669,202 @@
 
             // Przechowywanie produktów i składników dania
             let produktyData = {};
+            let produktyList = [];
+            let kategorieData = {};
             let danie = [];
+            let selectedProductId = null;
+            let selectedIndex = -1;
+
+            // Aktualizuj etykietę ilości przy wyborze produktu
+            function updateIloscLabel(produktId) {
+                if (produktId && produktyData[produktId]) {
+                    const jednostka = produktyData[produktId].jednostka || 'g';
+                    if (jednostka === 'szt') {
+                        iloscLabel.textContent = 'Ilość (szt)';
+                        iloscInput.value = 1;
+                    } else {
+                        iloscLabel.textContent = 'Ilość (g)';
+                        iloscInput.value = 100;
+                    }
+                } else {
+                    iloscLabel.textContent = 'Ilość (g)';
+                    iloscInput.value = 100;
+                }
+            }
+
+            // Usuń polskie znaki diakrytyczne
+            function removeDiacritics(text) {
+                const map = {
+                    'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n',
+                    'ó': 'o', 'ś': 's', 'ź': 'z', 'ż': 'z',
+                    'Ą': 'A', 'Ć': 'C', 'Ę': 'E', 'Ł': 'L', 'Ń': 'N',
+                    'Ó': 'O', 'Ś': 'S', 'Ź': 'Z', 'Ż': 'Z'
+                };
+                return text.replace(/[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/g, char => map[char] || char);
+            }
+
+            // Pobierz rdzeń słowa (usuń polskie końcówki)
+            function getStem(word) {
+                const endings = ['ow', 'ami', 'ach', 'om', 'ie', 'e', 'a', 'y', 'i', 'o', 'u'];
+                let stem = removeDiacritics(word.toLowerCase());
+                if (stem.length > 3) {
+                    for (const ending of endings) {
+                        if (stem.endsWith(ending) && stem.length - ending.length >= 3) {
+                            return stem.slice(0, -ending.length);
+                        }
+                    }
+                }
+                return stem;
+            }
+
+            // Sprawdź czy słowa pasują (uwzględniając odmianę i polskie znaki)
+            function wordsMatch(text, query) {
+                const normalizedText = removeDiacritics(text.toLowerCase());
+                const normalizedQuery = removeDiacritics(query.toLowerCase());
+
+                // Dokładne dopasowanie
+                if (normalizedText.includes(normalizedQuery)) return true;
+
+                // Dopasowanie po rdzeniu
+                const queryStem = getStem(query);
+                const words = normalizedText.split(/\s+/);
+
+                for (const word of words) {
+                    const wordStem = getStem(word);
+                    if (wordStem.includes(queryStem) || queryStem.includes(wordStem)) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            // Filtruj produkty według wpisanego tekstu (nazwa lub kategoria)
+            function filterProducts(query) {
+                if (!query.trim()) {
+                    return produktyList;
+                }
+                return produktyList.filter(p =>
+                    wordsMatch(p.nazwa, query) ||
+                    (p.kategoria && wordsMatch(p.kategoria, query))
+                );
+            }
+
+            // Renderuj dropdown z produktami
+            function renderDropdown(products) {
+                if (products.length === 0) {
+                    autocompleteDropdown.innerHTML = '<div class="autocomplete-no-results">Nie znaleziono produktów</div>';
+                    autocompleteDropdown.classList.add('visible');
+                    return;
+                }
+
+                // Grupuj według kategorii
+                const grouped = {};
+                products.forEach(p => {
+                    const kat = p.kategoria || 'inne';
+                    if (!grouped[kat]) grouped[kat] = [];
+                    grouped[kat].push(p);
+                });
+
+                let html = '';
+                let itemIndex = 0;
+                const sortedKategorie = Object.keys(grouped).sort();
+
+                for (const kategoria of sortedKategorie) {
+                    html += `<div class="autocomplete-category">${kategoria}</div>`;
+                    for (const produkt of grouped[kategoria]) {
+                        const isSelected = itemIndex === selectedIndex ? ' selected' : '';
+                        html += `<div class="autocomplete-item${isSelected}" data-id="${produkt.id}" data-index="${itemIndex}">
+                            <div class="product-name">${produkt.nazwa}</div>
+                            <div class="product-info">${produkt.kalorie} kcal | B: ${produkt.bialko}g | W: ${produkt.weglowodany}g | T: ${produkt.tluszcze}g</div>
+                        </div>`;
+                        itemIndex++;
+                    }
+                }
+
+                autocompleteDropdown.innerHTML = html;
+                autocompleteDropdown.classList.add('visible');
+
+                // Dodaj event listeners do elementów
+                autocompleteDropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        selectProduct(this.dataset.id);
+                    });
+                });
+            }
+
+            // Wybierz produkt
+            function selectProduct(produktId) {
+                const produkt = produktyData[produktId];
+                if (produkt) {
+                    selectedProductId = produktId;
+                    produktInput.value = produkt.nazwa;
+                    updateIloscLabel(produktId);
+                    hideDropdown();
+                    iloscInput.focus();
+                }
+            }
+
+            // Ukryj dropdown
+            function hideDropdown() {
+                autocompleteDropdown.classList.remove('visible');
+                selectedIndex = -1;
+            }
+
+            // Obsługa wpisywania w input
+            produktInput.addEventListener('input', function() {
+                selectedProductId = null;
+                selectedIndex = -1;
+                const filtered = filterProducts(this.value);
+                renderDropdown(filtered);
+            });
+
+            // Obsługa focus - pokaż wszystkie produkty
+            produktInput.addEventListener('focus', function() {
+                const filtered = filterProducts(this.value);
+                renderDropdown(filtered);
+            });
+
+            // Obsługa klawiszy
+            produktInput.addEventListener('keydown', function(e) {
+                const items = autocompleteDropdown.querySelectorAll('.autocomplete-item');
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+                    updateSelectedItem(items);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    selectedIndex = Math.max(selectedIndex - 1, 0);
+                    updateSelectedItem(items);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (selectedIndex >= 0 && items[selectedIndex]) {
+                        selectProduct(items[selectedIndex].dataset.id);
+                    } else if (selectedProductId) {
+                        addIngredient();
+                    }
+                } else if (e.key === 'Escape') {
+                    hideDropdown();
+                }
+            });
+
+            // Aktualizuj zaznaczony element
+            function updateSelectedItem(items) {
+                items.forEach((item, index) => {
+                    item.classList.toggle('selected', index === selectedIndex);
+                });
+                if (items[selectedIndex]) {
+                    items[selectedIndex].scrollIntoView({ block: 'nearest' });
+                }
+            }
+
+            // Ukryj dropdown po kliknięciu poza
+            document.addEventListener('click', function(e) {
+                if (!produktInput.contains(e.target) && !autocompleteDropdown.contains(e.target)) {
+                    hideDropdown();
+                }
+            });
 
             // Załaduj produkty przy starcie
             async function loadProdukty() {
@@ -476,23 +872,15 @@
                     const response = await fetch('/api/produkty');
                     const kategorie = await response.json();
 
+                    kategorieData = kategorie;
                     const sortedKategorie = Object.keys(kategorie).sort();
 
                     for (const kategoria of sortedKategorie) {
-                        const optgroup = document.createElement('optgroup');
-                        optgroup.label = kategoria.charAt(0).toUpperCase() + kategoria.slice(1);
-
                         for (const produkt of kategorie[kategoria]) {
-                            const option = document.createElement('option');
-                            option.value = produkt.id;
-                            option.textContent = produkt.nazwa;
-                            optgroup.appendChild(option);
-
-                            // Zapisz dane produktu
+                            produkt.kategoria = kategoria;
                             produktyData[produkt.id] = produkt;
+                            produktyList.push(produkt);
                         }
-
-                        produktSelect.appendChild(optgroup);
                     }
                 } catch (error) {
                     console.error('Błąd ładowania produktów:', error);
@@ -501,21 +889,24 @@
 
             // Dodaj składnik do dania
             function addIngredient() {
-                const produktId = produktSelect.value;
-                const gramy = parseFloat(gramyInput.value) || 100;
+                const ilosc = parseFloat(iloscInput.value) || 1;
 
-                if (!produktId) {
-                    alert('Wybierz produkt!');
+                if (!selectedProductId) {
+                    alert('Wybierz produkt z listy!');
                     return;
                 }
 
-                const produkt = produktyData[produktId];
-                const mnoznik = gramy / 100;
+                const produkt = produktyData[selectedProductId];
+                const jednostka = produkt.jednostka || 'g';
+
+                // Dla sztuk mnożnik = ilość, dla gramów mnożnik = gramy/100
+                const mnoznik = jednostka === 'szt' ? ilosc : ilosc / 100;
 
                 danie.push({
-                    id: produktId,
+                    id: selectedProductId,
                     nazwa: produkt.nazwa,
-                    gramy: gramy,
+                    ilosc: ilosc,
+                    jednostka: jednostka,
                     kalorie: produkt.kalorie * mnoznik,
                     bialko: produkt.bialko * mnoznik,
                     weglowodany: produkt.weglowodany * mnoznik,
@@ -523,8 +914,10 @@
                 });
 
                 // Reset formularza
-                produktSelect.value = '';
-                gramyInput.value = 100;
+                produktInput.value = '';
+                selectedProductId = null;
+                iloscLabel.textContent = 'Ilość (g)';
+                iloscInput.value = 100;
 
                 renderDanie();
             }
@@ -555,9 +948,10 @@
                 let totalKcal = 0, totalB = 0, totalW = 0, totalT = 0;
 
                 danie.forEach((item, index) => {
+                    const jednostkaLabel = item.jednostka === 'szt' ? ' szt' : 'g';
                     html += '<div class="ingredient-item">' +
                         '<span class="ingredient-name">' + item.nazwa + '</span>' +
-                        '<span class="ingredient-amount">' + item.gramy + 'g</span>' +
+                        '<span class="ingredient-amount">' + item.ilosc + jednostkaLabel + '</span>' +
                         '<span class="ingredient-calories">' + Math.round(item.kalorie) + ' kcal</span>' +
                         '<button class="btn btn-danger" onclick="window.removeIngredient(' + index + ')">✕</button>' +
                     '</div>';
@@ -602,8 +996,16 @@
             btnClear.addEventListener('click', clearDanie);
 
             // Enter key to add
-            gramyInput.addEventListener('keypress', function(e) {
+            iloscInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') addIngredient();
+            });
+
+            // Enter w polu produktu gdy już wybrany
+            produktInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && selectedProductId) {
+                    e.preventDefault();
+                    addIngredient();
+                }
             });
 
             // Aktualizuj przy zmianie zapotrzebowania

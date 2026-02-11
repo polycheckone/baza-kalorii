@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logowanie - Baza Kalorii</title>
+    <style>
+        :root {
+            --bg-gradient-1: #667eea;
+            --bg-gradient-2: #764ba2;
+            --card-bg: white;
+            --text-primary: #333;
+            --border-color: #e0e0e0;
+            --input-bg: white;
+            --accent-color: #667eea;
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-1: #1a1a2e;
+            --bg-gradient-2: #16213e;
+            --card-bg: #1f1f1f;
+            --text-primary: #e0e0e0;
+            --border-color: #444;
+            --input-bg: #2a2a2a;
+            --accent-color: #8b9cff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: background 0.3s;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+            transition: background 0.3s;
+        }
+
+        h1 {
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s, background 0.3s;
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 100%);
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .error {
+            background: #ffe0e0;
+            color: #c00;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        [data-theme="dark"] .error {
+            background: #4a1a1a;
+            color: #ff6b6b;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 3em;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: var(--text-primary);
+            opacity: 0.5;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            display: inline-block;
+            width: 40%;
+            height: 1px;
+            background: var(--border-color);
+            vertical-align: middle;
+            margin: 0 10px;
+        }
+
+        .btn-guest {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid var(--accent-color);
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: transparent;
+            color: var(--accent-color);
+        }
+
+        .btn-guest:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+    </style>
+    <script>
+        // Obsługa motywu - uruchom przed renderowaniem strony
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
+</head>
+<body>
+    <div class="login-card">
+        <div class="logo">🍎</div>
+        <h1>Baza Kalorii</h1>
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" id="login-form">
+            <button type="button" class="btn-guest" id="btn-guest">Wejdz jako Gosc</button>
+
+            <div class="divider">lub</div>
+
+            <div class="form-group">
+                <label for="login">Login</label>
+                <input type="text" id="login" name="login">
+            </div>
+            <div class="form-group">
+                <label for="haslo">Haslo</label>
+                <input type="password" id="haslo" name="haslo">
+            </div>
+            <button type="submit" class="btn">Zaloguj sie</button>
+        </form>
+
+        <script>
+            document.getElementById('btn-guest').addEventListener('click', function() {
+                document.getElementById('login').value = 'Gość';
+                document.getElementById('haslo').value = '';
+                document.getElementById('login-form').submit();
+            });
+        </script>
+    </div>
+</body>
+</html>

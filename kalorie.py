@@ -5,6 +5,7 @@ Baza SQLite z możliwością rozbudowy do aplikacji webowej.
 
 import sqlite3
 from pathlib import Path
+from werkzeug.security import generate_password_hash, check_password_hash
 
 DB_PATH = Path(__file__).parent / "kalorie.db"
 
@@ -32,9 +33,98 @@ def init_db():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS uzytkownicy (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            login TEXT NOT NULL UNIQUE,
+            haslo TEXT NOT NULL,
+            utworzono TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS statystyki (
+            klucz TEXT PRIMARY KEY,
+            wartosc INTEGER DEFAULT 0
+        )
+    """)
+
+    # Inicjalizuj licznik odwiedzin jeśli nie istnieje
+    cursor.execute("INSERT OR IGNORE INTO statystyki (klucz, wartosc) VALUES ('odwiedziny', 0)")
+
     conn.commit()
     conn.close()
     print("Baza danych zainicjalizowana.")
+
+
+def zwieksz_odwiedziny():
+    """Zwiększa licznik odwiedzin o 1 i zwraca nową wartość."""
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE statystyki SET wartosc = wartosc + 1 WHERE klucz = 'odwiedziny'")
+    cursor.execute("SELECT wartosc FROM statystyki WHERE klucz = 'odwiedziny'")
+    wynik = cursor.fetchone()
+
+    conn.commit()
+    conn.close()
+
+    return wynik[0] if wynik else 0
+
+
+def pobierz_odwiedziny():
+    """Pobiera aktualną liczbę odwiedzin."""
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT wartosc FROM statystyki WHERE klucz = 'odwiedziny'")
+    wynik = cursor.fetchone()
+
+    conn.close()
+
+    return wynik[0] if wynik else 0
+
+
+def dodaj_uzytkownika(login: str, haslo: str):
+    """Dodaje nowego użytkownika do bazy danych."""
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        haslo_hash = generate_password_hash(haslo)
+        cursor.execute("""
+            INSERT INTO uzytkownicy (login, haslo)
+            VALUES (?, ?)
+        """, (login, haslo_hash))
+        conn.commit()
+        print(f"Dodano użytkownika: {login}")
+    except sqlite3.IntegrityError:
+        print(f"Użytkownik '{login}' już istnieje.")
+    finally:
+        conn.close()
+
+
+def sprawdz_uzytkownika(login: str, haslo: str) -> bool:
+    """Sprawdza dane logowania użytkownika."""
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT haslo FROM uzytkownicy WHERE login = ?", (login,))
+    wynik = cursor.fetchone()
+    conn.close()
+
+    if not wynik:
+        return False
+
+    # Gość - puste hasło, logowanie bez hasła
+    if wynik[0] == '' and haslo == '':
+        return True
+
+    # Normalny użytkownik - sprawdź hash hasła
+    if wynik[0] and check_password_hash(wynik[0], haslo):
+        return True
+
+    return False
 
 
 def dodaj_produkt(nazwa: str, kalorie: float, bialko: float, weglowodany: float, tluszcze: float, kategoria: str = None):
